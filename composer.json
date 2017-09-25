@@ -1,5 +1,5 @@
 {
-    "name": "wyrihaximus/custom-request-body-parsers",
+    "name": "wyrihaximus/react-http-middleware-custom-request-body-parsers",
     "require": {
         "php": "^7.0",
         "psr/http-message": "^1.0"
