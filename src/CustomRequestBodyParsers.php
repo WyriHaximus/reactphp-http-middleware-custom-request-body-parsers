@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace WyriHaximus\React\Http\Middleware;
 
@@ -14,18 +14,19 @@ final class CustomRequestBodyParsers
     public function __construct()
     {
         /**
-         * Via: https://github.com/reactphp/http/pull/220#discussion_r140863176
+         * Via: https://github.com/reactphp/http/pull/220#discussion_r140863176.
          */
         $this->addType('application/json', function (ServerRequestInterface $request) {
             $result = json_decode((string)$request->getBody(), true);
             if (!is_array($result)) {
                 return $request;
             }
+
             return $request->withParsedBody($result);
         });
 
         /**
-         * Via: https://github.com/reactphp/http/pull/220#discussion_r140863176
+         * Via: https://github.com/reactphp/http/pull/220#discussion_r140863176.
          */
         $xmlParser = function (ServerRequestInterface $request) {
             $backup = libxml_disable_entity_loader(true);
@@ -37,21 +38,17 @@ final class CustomRequestBodyParsers
             if ($result === false) {
                 return $request;
             }
+
             return $request->withParsedBody($result);
         };
         $this->addType('application/xml', $xmlParser);
         $this->addType('text/xml', $xmlParser);
     }
 
-    public function addType($type, $callback)
-    {
-        $this->types[$type] = $callback;
-    }
-
     public function __invoke(ServerRequestInterface $request, $next)
     {
         $type = strtolower($request->getHeaderLine('Content-Type'));
-        list ($type) = explode(';', $type);
+        list($type) = explode(';', $type);
 
         if (!isset($this->types[$type])) {
             return $next($request);
@@ -68,5 +65,10 @@ final class CustomRequestBodyParsers
         }
 
         return $next($request);
+    }
+
+    public function addType($type, $callback)
+    {
+        $this->types[$type] = $callback;
     }
 }
