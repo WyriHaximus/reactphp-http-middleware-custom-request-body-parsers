@@ -1,12 +1,36 @@
 {
     "name": "wyrihaximus/react-http-middleware-custom-request-body-parsers",
+    "description": "react/http middleware for custom request body parsers",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cees-Jan Kiewiet",
+            "email": "ceesjank@gmail.com"
+        }
+    ],
     "require": {
         "php": "^7.0",
         "psr/http-message": "^1.0"
     },
+    "require-dev": {
+        "api-clients/test-utilities": "^4.2",
+        "react/http": "dev-master",
+        "ringcentral/psr7": "^1.2"
+    },
     "autoload": {
         "psr-4": {
             "WyriHaximus\\React\\Http\\Middleware\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WyriHaximus\\React\\Tests\\Http\\Middleware\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "7.0"
         }
     }
 }

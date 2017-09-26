@@ -3,9 +3,13 @@
 namespace WyriHaximus\React\Http\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
+
 final class CustomRequestBodyParsers
 {
-    private $types = array();
+    /**
+     * @var array
+     */
+    private $types = [];
 
     public function __construct()
     {
@@ -15,9 +19,9 @@ final class CustomRequestBodyParsers
         $this->addType('application/json', function (ServerRequestInterface $request) {
             $result = json_decode((string)$request->getBody(), true);
             if (!is_array($result)) {
-                return null;
+                return $request;
             }
-            return $result;
+            return $request->withParsedBody($result);
         });
 
         /**
@@ -46,7 +50,8 @@ final class CustomRequestBodyParsers
 
     public function __invoke(ServerRequestInterface $request, $next)
     {
-        $type = $request->getHeaderLine('Content-Type');
+        $type = strtolower($request->getHeaderLine('Content-Type'));
+        list ($type) = explode(';', $type);
 
         if (!isset($this->types[$type])) {
             return $next($request);
