@@ -3,6 +3,7 @@
 namespace WyriHaximus\React\Http\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
+use function React\Promise\reject;
 use function RingCentral\Psr7\stream_for;
 
 final class CustomRequestBodyParsers
@@ -61,10 +62,8 @@ final class CustomRequestBodyParsers
             $parser = $this->types[$type];
             /** @var ServerRequestInterface $request */
             $request = $parser($request);
-        } catch (\Exception $e) {
-            return $next($request);
         } catch (\Throwable $t) {
-            return $next($request);
+            return reject($t);
         }
 
         return $next($request);

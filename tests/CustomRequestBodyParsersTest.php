@@ -4,8 +4,10 @@ namespace WyriHaximus\React\Tests\Http\Middleware;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
+use React\EventLoop\Factory;
 use React\Http\ServerRequest;
 use WyriHaximus\React\Http\Middleware\CustomRequestBodyParsers;
+use function Clue\React\Block\await;
 use function RingCentral\Psr7\stream_for;
 
 final class CustomRequestBodyParsersTest extends TestCase
@@ -64,5 +66,22 @@ final class CustomRequestBodyParsersTest extends TestCase
         });
 
         self::assertSame('gnpbpng', $parsedRequest->getParsedBody());
+    }
+
+    public function testParseFailure()
+    {
+        self::expectException(\Exception::class);
+        self::expectExceptionMessage('test failure');
+
+        $tacocatString = 'tacocat';
+        $request = (new ServerRequest('POST', 'https://example.com/'))->withHeader('Content-Type', 'animal/tacocat')->withBody(stream_for($tacocatString));
+        $parser = new CustomRequestBodyParsers();
+        $parser->addType('animal/tacocat', function (ServerRequestInterface $request) {
+            throw new \Exception('test failure');
+        });
+        /** @var ServerRequestInterface $parsedRequest */
+        await($parser($request, function (ServerRequestInterface $request) {
+            return $request;
+        }), Factory::create());
     }
 }
