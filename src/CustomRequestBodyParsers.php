@@ -3,6 +3,7 @@
 namespace WyriHaximus\React\Http\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
+use function RingCentral\Psr7\stream_for;
 
 final class CustomRequestBodyParsers
 {
@@ -17,21 +18,23 @@ final class CustomRequestBodyParsers
          * Via: https://github.com/reactphp/http/pull/220#discussion_r140863176.
          */
         $this->addType('application/json', function (ServerRequestInterface $request) {
-            $result = json_decode((string)$request->getBody(), true);
+            $body = (string)$request->getBody();
+            $result = json_decode($body, true);
             if (!is_array($result)) {
                 return $request;
             }
 
-            return $request->withParsedBody($result);
+            return $request->withParsedBody($result)->withBody(stream_for($body));
         });
 
         /**
          * Via: https://github.com/reactphp/http/pull/220#discussion_r140863176.
          */
         $xmlParser = function (ServerRequestInterface $request) {
+            $body = (string)$request->getBody();
             $backup = libxml_disable_entity_loader(true);
             $backup_errors = libxml_use_internal_errors(true);
-            $result = simplexml_load_string((string)$request->getBody());
+            $result = simplexml_load_string($body);
             libxml_disable_entity_loader($backup);
             libxml_clear_errors();
             libxml_use_internal_errors($backup_errors);
@@ -39,7 +42,7 @@ final class CustomRequestBodyParsers
                 return $request;
             }
 
-            return $request->withParsedBody($result);
+            return $request->withParsedBody($result)->withBody(stream_for($body));
         };
         $this->addType('application/xml', $xmlParser);
         $this->addType('text/xml', $xmlParser);
