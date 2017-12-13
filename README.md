@@ -27,12 +27,10 @@ $parsersMiddleware->addType('str/rot13', function (ServerRequestInterface $reque
     $body = (string)$request->getBody());
     return $request->withParsedBody(str_rot13($body));
 });
-$server = new Server(new MiddlewareRunner([
-    /** Other middleware */
-    new RequestBodyBufferMiddleware(),
+$server = new Server([
     $parsersMiddleware,
     /** Other middleware */
-]));
+]);
 ```
 
 # License
