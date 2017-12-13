@@ -10,11 +10,11 @@
     ],
     "require": {
         "php": "^7.0",
-        "psr/http-message": "^1.0"
+        "psr/http-message": "^1.0",
+        "react/http": "^0.8.0"
     },
     "require-dev": {
         "api-clients/test-utilities": "^4.2",
-        "react/http": "dev-master",
         "ringcentral/psr7": "^1.2"
     },
     "autoload": {
