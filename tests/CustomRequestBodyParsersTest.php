@@ -10,9 +10,12 @@ use WyriHaximus\React\Http\Middleware\CustomRequestBodyParsers;
 use function Clue\React\Block\await;
 use function RingCentral\Psr7\stream_for;
 
+/**
+ * @internal
+ */
 final class CustomRequestBodyParsersTest extends TestCase
 {
-    public function testParseJson()
+    public function testParseJson(): void
     {
         $jsonString = '{"foo":"bar"}';
         $request = (new ServerRequest('POST', 'https://example.com/'))->withHeader('Content-Type', 'application/json')->withBody(stream_for($jsonString));
@@ -37,7 +40,7 @@ final class CustomRequestBodyParsersTest extends TestCase
     /**
      * @dataProvider provideXmlContentTypes
      */
-    public function testParseXml(string $contentType)
+    public function testParseXml(string $contentType): void
     {
         $xmlString = '<?xml version="1.0" encoding="UTF-8"?><bar><foo>De Modelen</foo></bar>';
         $request = (new ServerRequest('POST', 'https://example.com/'))->withHeader('Content-Type', $contentType)->withBody(stream_for($xmlString));
@@ -52,13 +55,13 @@ final class CustomRequestBodyParsersTest extends TestCase
         ], (array)$parsedRequest->getParsedBody());
     }
 
-    public function testParseCustom()
+    public function testParseCustom(): void
     {
         $tacocatString = 'tacocat';
         $request = (new ServerRequest('POST', 'https://example.com/'))->withHeader('Content-Type', 'animal/tacocat')->withBody(stream_for($tacocatString));
         $parser = new CustomRequestBodyParsers();
         $parser->addType('animal/tacocat', function (ServerRequestInterface $request) {
-            return $request->withParsedBody(str_rot13((string)$request->getBody()));
+            return $request->withParsedBody(\str_rot13((string)$request->getBody()));
         });
         /** @var ServerRequestInterface $parsedRequest */
         $parsedRequest = $parser($request, function (ServerRequestInterface $request) {
@@ -68,7 +71,7 @@ final class CustomRequestBodyParsersTest extends TestCase
         self::assertSame('gnpbpng', $parsedRequest->getParsedBody());
     }
 
-    public function testParseFailure()
+    public function testParseFailure(): void
     {
         self::expectException(\Exception::class);
         self::expectExceptionMessage('test failure');
@@ -76,7 +79,7 @@ final class CustomRequestBodyParsersTest extends TestCase
         $tacocatString = 'tacocat';
         $request = (new ServerRequest('POST', 'https://example.com/'))->withHeader('Content-Type', 'animal/tacocat')->withBody(stream_for($tacocatString));
         $parser = new CustomRequestBodyParsers();
-        $parser->addType('animal/tacocat', function (ServerRequestInterface $request) {
+        $parser->addType('animal/tacocat', function (ServerRequestInterface $request): void {
             throw new \Exception('test failure');
         });
         /** @var ServerRequestInterface $parsedRequest */

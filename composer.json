@@ -9,12 +9,13 @@
         }
     ],
     "require": {
-        "php": "^7.0",
+        "php": "^7.2",
         "psr/http-message": "^1.0",
         "react/http": "^0.8.0"
     },
     "require-dev": {
-        "api-clients/test-utilities": "^4.2",
+        "api-clients/cs-fixer-config": "^1.1",
+        "api-clients/test-utilities": "^5.2",
         "ringcentral/psr7": "^1.2"
     },
     "autoload": {
@@ -30,7 +31,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "7.0"
+            "php": "7.2"
         }
     },
     "scripts": {

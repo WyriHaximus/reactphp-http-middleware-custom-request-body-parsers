@@ -20,8 +20,8 @@ final class CustomRequestBodyParsers
          */
         $this->addType('application/json', function (ServerRequestInterface $request) {
             $body = (string)$request->getBody();
-            $result = json_decode($body, true);
-            if (!is_array($result)) {
+            $result = \json_decode($body, true);
+            if (!\is_array($result)) {
                 return $request;
             }
 
@@ -33,12 +33,12 @@ final class CustomRequestBodyParsers
          */
         $xmlParser = function (ServerRequestInterface $request) {
             $body = (string)$request->getBody();
-            $backup = libxml_disable_entity_loader(true);
-            $backup_errors = libxml_use_internal_errors(true);
-            $result = simplexml_load_string($body);
-            libxml_disable_entity_loader($backup);
-            libxml_clear_errors();
-            libxml_use_internal_errors($backup_errors);
+            $backup = \libxml_disable_entity_loader(true);
+            $backup_errors = \libxml_use_internal_errors(true);
+            $result = \simplexml_load_string($body);
+            \libxml_disable_entity_loader($backup);
+            \libxml_clear_errors();
+            \libxml_use_internal_errors($backup_errors);
             if ($result === false) {
                 return $request;
             }
@@ -51,8 +51,8 @@ final class CustomRequestBodyParsers
 
     public function __invoke(ServerRequestInterface $request, $next)
     {
-        $type = strtolower($request->getHeaderLine('Content-Type'));
-        list($type) = explode(';', $type);
+        $type = \strtolower($request->getHeaderLine('Content-Type'));
+        list($type) = \explode(';', $type);
 
         if (!isset($this->types[$type])) {
             return $next($request);
@@ -69,7 +69,7 @@ final class CustomRequestBodyParsers
         return $next($request);
     }
 
-    public function addType($type, $callback)
+    public function addType($type, $callback): void
     {
         $this->types[$type] = $callback;
     }
