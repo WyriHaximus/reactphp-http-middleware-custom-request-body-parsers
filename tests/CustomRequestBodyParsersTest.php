@@ -2,13 +2,13 @@
 
 namespace WyriHaximus\React\Tests\Http\Middleware;
 
+use function Clue\React\Block\await;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Factory;
 use React\Http\Io\ServerRequest;
-use WyriHaximus\React\Http\Middleware\CustomRequestBodyParsers;
-use function Clue\React\Block\await;
 use function RingCentral\Psr7\stream_for;
+use WyriHaximus\React\Http\Middleware\CustomRequestBodyParsers;
 
 /**
  * @internal
