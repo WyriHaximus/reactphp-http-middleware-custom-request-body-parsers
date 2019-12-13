@@ -3,17 +3,17 @@
 namespace WyriHaximus\React\Tests\Http\Middleware;
 
 use function Clue\React\Block\await;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Factory;
 use React\Http\Io\ServerRequest;
 use function RingCentral\Psr7\stream_for;
+use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
 use WyriHaximus\React\Http\Middleware\CustomRequestBodyParsers;
 
 /**
  * @internal
  */
-final class CustomRequestBodyParsersTest extends TestCase
+final class CustomRequestBodyParsersTest extends AsyncTestCase
 {
     public function testParseJson(): void
     {
