@@ -2,6 +2,8 @@
 
 Pull requests are highly appreciated. Here's a quick guide.
 
+Please note: we're currently using the `make` utility to condense tasks run via Composer. If you're contributing outside of Docker, or you're using an operating system without the `make` utility installed, you can review the `Makefile` and run the appropriate commands manually.
+
 Fork, then clone the repo:
 
     git clone git@github.com:your-username/reactphp-http-middleware-custom-request-body-parers.git
@@ -17,7 +19,7 @@ Make sure the tests pass:
 Make your change. Add tests for your change. Make the tests pass:
 
     make unit
-    
+
 Before committing and submitting your pull request make sure it passes PSR2 coding style, unit tests pass and pass on all supported PHP versions:
 
     make contrib
