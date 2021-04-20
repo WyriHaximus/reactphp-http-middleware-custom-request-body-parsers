@@ -11,7 +11,6 @@ use function assert;
 use function explode;
 use function is_array;
 use function libxml_clear_errors;
-use function libxml_disable_entity_loader;
 use function libxml_use_internal_errors;
 use function React\Promise\reject;
 use function RingCentral\Psr7\stream_for;
@@ -46,10 +45,8 @@ final class CustomRequestBodyParsers
          */
         $xmlParser = static function (ServerRequestInterface $request): ServerRequestInterface {
             $body         = (string) $request->getBody();
-            $backup       = libxml_disable_entity_loader(true);
             $backupErrors = libxml_use_internal_errors(true);
             $result       = simplexml_load_string($body);
-            libxml_disable_entity_loader($backup);
             libxml_clear_errors();
             libxml_use_internal_errors($backupErrors);
 
