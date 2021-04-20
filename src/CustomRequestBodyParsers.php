@@ -1,27 +1,40 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace WyriHaximus\React\Http\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
+
+use function assert;
+use function explode;
+use function is_array;
+use function libxml_clear_errors;
+use function libxml_disable_entity_loader;
+use function libxml_use_internal_errors;
 use function React\Promise\reject;
 use function RingCentral\Psr7\stream_for;
+use function Safe\json_decode;
+use function Safe\simplexml_load_string;
+use function strtolower;
 
 final class CustomRequestBodyParsers
 {
-    /**
-     * @var array
-     */
-    private $types = [];
+    private const XML_PARSE_FAILED = false;
+
+    /** @var array<mixed> */
+    private array $types = [];
 
     public function __construct()
     {
         /**
          * Via: https://github.com/reactphp/http/pull/220#discussion_r140863176.
          */
-        $this->addType('application/json', function (ServerRequestInterface $request) {
-            $body = (string)$request->getBody();
-            $result = \json_decode($body, true);
-            if (!\is_array($result)) {
+        $this->addType('application/json', static function (ServerRequestInterface $request): ServerRequestInterface {
+            $body   = (string) $request->getBody();
+            $result = json_decode($body, true);
+            if (! is_array($result)) {
                 return $request;
             }
 
@@ -31,15 +44,20 @@ final class CustomRequestBodyParsers
         /**
          * Via: https://github.com/reactphp/http/pull/220#discussion_r140863176.
          */
-        $xmlParser = function (ServerRequestInterface $request) {
-            $body = (string)$request->getBody();
-            $backup = \libxml_disable_entity_loader(true);
-            $backup_errors = \libxml_use_internal_errors(true);
-            $result = \simplexml_load_string($body);
-            \libxml_disable_entity_loader($backup);
-            \libxml_clear_errors();
-            \libxml_use_internal_errors($backup_errors);
-            if ($result === false) {
+        $xmlParser = static function (ServerRequestInterface $request): ServerRequestInterface {
+            $body         = (string) $request->getBody();
+            $backup       = libxml_disable_entity_loader(true);
+            $backupErrors = libxml_use_internal_errors(true);
+            $result       = simplexml_load_string($body);
+            libxml_disable_entity_loader($backup);
+            libxml_clear_errors();
+            libxml_use_internal_errors($backupErrors);
+
+            /**
+             * @phpstan-ignore-next-line
+             * @psalm-suppress TypeDoesNotContainType
+             */
+            if ($result === self::XML_PARSE_FAILED) {
                 return $request;
             }
 
@@ -49,27 +67,31 @@ final class CustomRequestBodyParsers
         $this->addType('text/xml', $xmlParser);
     }
 
-    public function __invoke(ServerRequestInterface $request, $next)
+    /**
+     * @phpstan-ignore-next-line
+     * @psalm-suppress MissingParamType
+     */
+    public function __invoke(ServerRequestInterface $request, $next) // phpcs:disabled
     {
-        $type = \strtolower($request->getHeaderLine('Content-Type'));
-        list($type) = \explode(';', $type);
+        $type   = strtolower($request->getHeaderLine('Content-Type'));
+        [$type] = explode(';', $type);
 
-        if (!isset($this->types[$type])) {
+        if (! array_key_exists($type, $this->types)) {
             return $next($request);
         }
 
         try {
-            $parser = $this->types[$type];
-            /** @var ServerRequestInterface $request */
+            $parser  = $this->types[$type];
             $request = $parser($request);
-        } catch (\Throwable $t) {
+            assert($request instanceof ServerRequestInterface);
+        } catch (Throwable $t) {/** @phpstan-ignore-line */
             return reject($t);
         }
 
         return $next($request);
     }
 
-    public function addType($type, $callback): void
+    public function addType(string $type, callable $callback): void
     {
         $this->types[$type] = $callback;
     }
