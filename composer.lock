@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "50e6297af4cebcec5179c9ddcf0936fa",
+    "content-hash": "867f9863dafda98fe37922495e89a534",
     "packages": [
+        {
+            "name": "ancarda/psr7-string-stream",
+            "version": "1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ancarda/psr7-string-stream.git",
+                "reference": "613485cfa5ed04fe26f6b60807209e098a97ca87"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ancarda/psr7-string-stream/zipball/613485cfa5ed04fe26f6b60807209e098a97ca87",
+                "reference": "613485cfa5ed04fe26f6b60807209e098a97ca87",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "infection/infection": "^0.11.5",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpstan/phpstan": "^0.11.15",
+                "phpstan/phpstan-phpunit": "^0.11.2",
+                "phpstan/phpstan-strict-rules": "^0.11.1",
+                "phpunit/phpunit": "^7.5",
+                "squizlabs/php_codesniffer": "^3.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ancarda\\Psr7\\StringStream\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Minimal string based PSR-7 StreamInterface implementation",
+            "support": {
+                "source": "https://github.com/ancarda/psr7-string-stream/tree/1.3"
+            },
+            "time": "2019-08-31T19:30:45+00:00"
+        },
         {
             "name": "evenement/evenement",
             "version": "v3.0.1",
