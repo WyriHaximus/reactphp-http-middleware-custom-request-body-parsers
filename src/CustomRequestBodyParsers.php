@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WyriHaximus\React\Http\Middleware;
 
+use Ancarda\Psr7\StringStream\StringStream;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
@@ -13,7 +14,6 @@ use function is_array;
 use function libxml_clear_errors;
 use function libxml_use_internal_errors;
 use function React\Promise\reject;
-use function RingCentral\Psr7\stream_for;
 use function Safe\json_decode;
 use function Safe\simplexml_load_string;
 use function strtolower;
@@ -37,7 +37,7 @@ final class CustomRequestBodyParsers
                 return $request;
             }
 
-            return $request->withParsedBody($result)->withBody(stream_for($body));
+            return $request->withParsedBody($result)->withBody(new StringStream($body));
         });
 
         /**
@@ -58,7 +58,7 @@ final class CustomRequestBodyParsers
                 return $request;
             }
 
-            return $request->withParsedBody($result)->withBody(stream_for($body));
+            return $request->withParsedBody($result)->withBody(new StringStream($body));
         };
         $this->addType('application/xml', $xmlParser);
         $this->addType('text/xml', $xmlParser);
